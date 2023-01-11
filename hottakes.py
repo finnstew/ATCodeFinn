@@ -1,5 +1,5 @@
 class User:
-  def __init__(self, name, passW, dayResponse):
+  def __init__(self, name, passW, dayResponse, responses):
     self.name = name
     self.passW = passW
     self.dayResponse = dayResponse
@@ -13,8 +13,11 @@ class User:
     if passAttempt1 == passAttempt2:
       self.passW = passAttempt1
 
-  def respondDaily(self, dayResponse):
-    pass
+  def respondDaily(self, dayResponse, reponse):
+    dayReponse = input('Response:')
+    response.append(dayResponse)
+    print(dayResponse)
+    print('Here are your previous responses:' + reponse)
 
 
 
@@ -22,7 +25,7 @@ import random
 accounts = {}
 current = None
 daily question = " "
-questions = ['Favorite food', 'favorite movie', 'worst tv show']
+questions = ['Favorite food',1 'favorite movie', 'worst tv show']
 
 
 def start():
@@ -49,7 +52,13 @@ def start():
 
 
 def main():
-  dayQuestion = questions[random.randint(0 , len(questions) - 1)]
-  print(dayQuestion)
+    choice = input('1: Submit Topic | 2: Respond')
 
-  current.respondDaily()
+    dayQuestion = questions[random.randint(0 , len(questions) - 1)]
+
+    if choice == '2':
+        print(dayQuestion)
+        current.respondDaily()
+
+    if choice == '1':
+        questions.append(input('Question'))
