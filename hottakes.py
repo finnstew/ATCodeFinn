@@ -1,3 +1,21 @@
+'''make hot take its own class with prompt and response
+createHotTake
+calls hot take constructor
+use date time to track when responses were made
+'''
+
+class Take:
+    def __init__(self, prompt,response,time)
+        self.prompt = prompt
+        self.response = response
+        self.time = datetime.now()
+
+    def respond():
+        print(self.prompt)
+        self.response = input('What are your thoughts?')
+
+
+
 class User:
   def __init__(self, name, passW, dayResponse, responses):
     self.name = name
@@ -25,7 +43,7 @@ import random
 accounts = {}
 current = None
 daily question = " "
-questions = ['Favorite food',1 'favorite movie', 'worst tv show']
+questions = ['Favorite food', 'favorite movie', 'worst tv show']
 
 
 def start():
