@@ -1,82 +1,99 @@
-'''make hot take its own class with prompt and response
-createHotTake
-calls hot take constructor
-use date time to track when responses were made
-'''
-
-class Take:
-    def __init__(self, prompt,response,time)
-        self.prompt = prompt
-        self.response = response
-        self.time = datetime.now()
-
-    def respond():
-        print(self.prompt)
-        self.response = input('What are your thoughts?')
-
-
-
-class User:
-  def __init__(self, name, passW, dayResponse, responses):
-    self.name = name
-    self.passW = passW
-    self.dayResponse = dayResponse
-
-  def changeName(self, name):
-    self.name = input("New Name: ")
-
-  def changePass(self, passW):
-    passAttempt1 = input("New Password: ")
-    passAttempt2 = input("Confirm New Password: ")
-    if passAttempt1 == passAttempt2:
-      self.passW = passAttempt1
-
-  def respondDaily(self, dayResponse, reponse):
-    dayReponse = input('Response:')
-    response.append(dayResponse)
-    print(dayResponse)
-    print('Here are your previous responses:' + reponse)
-
-
-
+from datetime import datetime
+import shelve
 import random
 accounts = {}
 current = None
-daily question = " "
-questions = ['Favorite food', 'favorite movie', 'worst tv show']
+prompts = ['Favorite food?', 'Least favorite food?', 'Favorite movie?', 'Least favorite movie?', 'Favorite subject?', 'Least favorite subject?']
+responses = {}
+responseCount = 0
 
+with shelve.open('takes') as db:
+  if 'prompts' in db:
+    prompts = db['prompts']
+  if 'responseCount' in db:
+    responseCount = db['responseCount']
+
+
+class Take:
+    def __init__(self, prompt,response, account, time):
+        self.prompt = prompt
+        self.response = response
+        self.account = account
+        self.time = time
+
+class User:
+  def __init__(self, name):
+    self.name = name
+    self.responseCodes = []
 
 def start():
-
+  global prompts
   global current
+  global accounts
 
-  choice = input('[1] Create Account ; [2] Login')
+  with shelve.open('takes') as db:
+    if 'accounts' in db:
+      accounts = db['accounts']
 
-  if choice == '1':
-    name = input('Name: ')
-    a = User(name, '')
-    accounts[name] = a
-    current = accounts[name]
-    main()
-
-  if choice == '2':
-    name = input('Login Name: ')
-    if name in accounts:
+    choice = input('[1] Create Account ; [2] Login')
+    if choice == '1':
+      name = input('Name: ')
+      a = User(name)
+      accounts[name] = a
       current = accounts[name]
+      db['accounts'] = accounts
       main()
-    else:
-      print('This account does not exist')
-      start()
+
+    if choice == '2':
+      name = input('Login Name: ')
+      if name in accounts:
+        current = accounts[name]
+        main()
+      else:
+        print('This account does not exist')
+        start()
 
 
 def main():
-    choice = input('1: Submit Topic | 2: Respond')
+    global prompts
+    global current
+    global responses
+    global responseCount
 
-    dayQuestion = questions[random.randint(0 , len(questions) - 1)]
+    with shelve.open('takes') as db:
+      if 'responses' in db:
+        responses = db['responses']
 
-    if choice == '2':
-        print(dayQuestion)
-        current.respondDaily()
+      choice = input('1: Submit Topic | 2: Respond | 3: See Your Responses | 4: See Others Responses | 5. Logout ')
 
-    if choice == '1':
-        questions.append(input('Question'))
+      if choice == '2':
+        responseCount = responseCount + 1
+        db['responseCount'] = responseCount
+        prompt = prompts[random.randint(0, len(prompts)) - 1]
+        print(prompt)
+        r = Take(prompt, input('Respond Here: '), str(current), datetime.now())
+        responses[str(responseCount)] = r
+        main()
+
+      if choice == '1':
+        prompts.append(input('Question: '))
+        db['prompts'] = prompts
+        main()
+
+      if choice == '3':
+        for i in range(responseCount):
+          r = responses[str(i)]
+          if g.account == current:
+            print(g.prompt + ' Response: ' + g.response + ' at ' + g.time)
+        main()
+
+      if choice == '4':
+        for i in range(responseCount):
+          r = responses[str(i)]
+          print(r.prompt + ' Response: ' + r.response + ' at ' + r.time)
+
+      if choice == '5':
+        start()
+
+
+start()
