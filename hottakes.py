@@ -7,13 +7,6 @@ prompts = ['Favorite food?', 'Least favorite food?', 'Favorite movie?', 'Least f
 responses = {}
 responseCount = 0
 
-with shelve.open('takes') as db:
-  if 'prompts' in db:
-    prompts = db['prompts']
-  if 'responseCount' in db:
-    responseCount = db['responseCount']
-
-
 class Take:
     def __init__(self, prompt,response, account, time):
         self.prompt = prompt
@@ -53,7 +46,6 @@ def start():
         print('This account does not exist')
         start()
 
-
 def main():
     global prompts
     global current
@@ -63,7 +55,10 @@ def main():
     with shelve.open('takes') as db:
       if 'responses' in db:
         responses = db['responses']
-
+      if 'responseCount' in db:
+        responseCount = db['responseCount']
+      if 'prompts' in db:
+        prompts = db['prompts']
       choice = input('1: Submit Topic | 2: Respond | 3: See Your Responses | 4: See Others Responses | 5. Logout ')
 
       if choice == '2':
@@ -71,7 +66,7 @@ def main():
         db['responseCount'] = responseCount
         prompt = prompts[random.randint(0, len(prompts)) - 1]
         print(prompt)
-        r = Take(prompt, input('Respond Here: '), str(current), datetime.now())
+        r = Take(prompt, input('Respond Here: '), current.name, datetime.now())
         responses[str(responseCount)] = r
         main()
 
@@ -81,19 +76,19 @@ def main():
         main()
 
       if choice == '3':
-        for i in range(responseCount):
-          r = responses[str(i)]
-          if g.account == current:
-            print(g.prompt + ' Response: ' + g.response + ' at ' + g.time)
+        for key in responses:
+          g = responses[key]
+          if g.account == current.name:
+            print(g.prompt + ' Response: ' + g.response + ' at ' + str(g.time))
         main()
 
       if choice == '4':
-        for i in range(responseCount):
-          r = responses[str(i)]
-          print(r.prompt + ' Response: ' + r.response + ' at ' + r.time)
+        for key in responses:
+          r = responses[key]
+          print(r.prompt + ' Response: ' + r.response + ' at ' + str(r.time) + ' by ' + r.account)
+        main()
 
       if choice == '5':
         start()
-
 
 start()
