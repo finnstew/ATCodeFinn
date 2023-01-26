@@ -85,7 +85,8 @@ def main():
       if choice == '4':
         for key in responses:
           r = responses[key]
-          print(r.prompt + ' Response: ' + r.response + ' at ' + str(r.time) + ' by ' + r.account)
+          if r.account != current.name:
+            print(r.prompt + ' Response: ' + r.response + ' at ' + str(r.time) + ' by ' + r.account)
         main()
 
       if choice == '5':
